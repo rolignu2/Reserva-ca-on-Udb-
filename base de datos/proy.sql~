@@ -1,0 +1,180 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`estado`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `estado` (
+  `id_estado` INT NOT NULL ,
+  `estado` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id_estado`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`marca`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `marca` (
+  `id_marca` INT NOT NULL ,
+  `marca` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id_marca`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`modelo`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `modelo` (
+  `id_modelo` INT NOT NULL ,
+  `modelo` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id_modelo`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tipo`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `tipo` (
+  `id_tipo` INT NOT NULL ,
+  `tipo` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id_tipo`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`audiovisual`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `audiovisual` (
+  `id_audiovisual` INT NOT NULL ,
+  `inventario` VARCHAR(45) NULL ,
+  `reservado` BIT NULL ,
+  `id_estado` INT NULL ,
+  `id_marca` INT NULL ,
+  `id_modelo` INT NULL ,
+  `id_tipo` INT NULL ,
+  PRIMARY KEY (`id_audiovisual`) ,
+  INDEX `foreign_key_tipo_idx` (`id_tipo` ASC) ,
+  INDEX `foreign_key_modelo_idx` (`id_modelo` ASC) ,
+  INDEX `foreign_key_marca_idx` (`id_marca` ASC) ,
+  INDEX `foreign_key_estado_idx` (`id_estado` ASC) ,
+  CONSTRAINT `foreign_key_tipo`
+    FOREIGN KEY (`id_tipo` )
+    REFERENCES `mydb`.`tipo` (`id_tipo` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `foreign_key_modelo`
+    FOREIGN KEY (`id_modelo` )
+    REFERENCES `mydb`.`modelo` (`id_modelo` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `foreign_key_marca`
+    FOREIGN KEY (`id_marca` )
+    REFERENCES `mydb`.`marca` (`id_marca` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `foreign_key_estado`
+    FOREIGN KEY (`id_estado` )
+    REFERENCES `mydb`.`estado` (`id_estado` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`rol`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `rol` (
+  `id_rol` INT NOT NULL ,
+  `rol` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id_rol`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`usuario`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `usuario` (
+  `id_usuario` INT NOT NULL ,
+  `nombre` VARCHAR(45) NULL ,
+  `apellido` VARCHAR(45) NULL ,
+  `uid` INT NULL ,
+  `id_rol` INT NULL ,
+  PRIMARY KEY (`id_usuario`) ,
+  INDEX `foreign_key_rol_idx` (`id_rol` ASC) ,
+  CONSTRAINT `foreign_key_rol`
+    FOREIGN KEY (`id_rol` )
+    REFERENCES `mydb`.`rol` (`id_rol` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`seguridad`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `seguridad` (
+  `usuario` VARCHAR(45) NULL ,
+  `clave` VARCHAR(45) NULL ,
+  `id_usuario` INT NULL ,
+  INDEX `foreign_key_usuario_idx` (`id_usuario` ASC) ,
+  CONSTRAINT `foreign_key_usuario`
+    FOREIGN KEY (`id_usuario` )
+    REFERENCES `mydb`.`usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`solicitud`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `solicitud` (
+  `id_solicitud` INT NOT NULL ,
+  `descripcion` VARCHAR(45) NULL ,
+  `fecha_solicitud` DATE NULL ,
+  `hora_inicio` TIME NULL ,
+  `hora_final` TIME NULL ,
+  `canion` BIT NULL ,
+  `laptop` BIT NULL ,
+  `aula` VARCHAR(45) NULL ,
+  `estado_solicitud` BIT NULL ,
+  `id_usuario` INT NULL ,
+  PRIMARY KEY (`id_solicitud`) ,
+  INDEX `foreign_key_usuario_idx` (`id_usuario` ASC) ,
+  CONSTRAINT `foreign_key_usuario`
+    FOREIGN KEY (`id_usuario` )
+    REFERENCES `mydb`.`usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`aprobados`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `aprobados` (
+  `id_aprobados` INT NOT NULL ,
+  `id_solicitud` INT NULL ,
+  `id_audiovisual` INT NULL ,
+  PRIMARY KEY (`id_aprobados`) ,
+  INDEX `foreign_key_audiovisual_idx` (`id_audiovisual` ASC) ,
+  INDEX `foreign_key_solicitud_idx` (`id_solicitud` ASC) ,
+  CONSTRAINT `foreign_key_audiovisual`
+    FOREIGN KEY (`id_audiovisual` )
+    REFERENCES `mydb`.`audiovisual` (`id_audiovisual` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `foreign_key_solicitud`
+    FOREIGN KEY (`id_solicitud` )
+    REFERENCES `mydb`.`solicitud` (`id_solicitud` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
